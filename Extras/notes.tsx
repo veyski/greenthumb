@@ -1,20 +1,26 @@
-type QuestionProps = { query: string; onValueChange: (value: string) => void; isFirst?: boolean }
+type QuestionProps = {
+  query: string;
+  onValueChange: (value: string) => void;
+  isFirst?: boolean;
+};
 const Question = ({ query, onValueChange, isFirst }: QuestionProps) => {
-    return <div>
-        {query}
-        {isFirst ? null: <button>previous</button>}
-        <input onChange={e => onValueChange(e.currentTarget.value)} />
-        <button>next</button>
+  return (
+    <div>
+      {query}
+      {isFirst ? null : <button>previous</button>}
+      <input onChange={(e) => onValueChange(e.currentTarget.value)} />
+      <button>next</button>
     </div>
-}
+  );
+};
 
 const Main = () => {
   const [q1, setQ1] = useState("");
   const [q2, setQ2] = useState("");
 
-const foo: { [key: string]: { q: string; ans: string } } = {
-  q1: { q: "What's wrong with your plant", ans: q1 },
-};
+  const foo: { [key: string]: { q: string; ans: string } } = {
+    q1: { q: "What's wrong with your plant", ans: q1 },
+  };
 
   return (
     <Wizard>
@@ -32,8 +38,7 @@ const foo: { [key: string]: { q: string; ans: string } } = {
   );
 };
 
-
-
+/*
 type ResultsProps = {
   queries: { [key: string]: { q: string; ans: string } };
 };
@@ -59,3 +64,4 @@ const Results = ({ queries }: ResultsProps) => {
         {aiResult}
     </div>
 };
+*/

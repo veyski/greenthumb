@@ -1,16 +1,26 @@
-import { useState } from "react";
-import { Wizard, useWizard } from "react-use-wizard";
-import { Question } from "./Question";
+import React, { useState } from "react";
+import { Wizard } from "react-use-wizard";
+import Question from "./Question";
+import Results from "./Results";
 
 import "./App.css";
+
+interface Query {
+  q: string;
+  ans: string;
+}
 
 function App() {
   const [q1, setQ1] = useState("");
   const [q2, setQ2] = useState("");
+  const [q3, setQ3] = useState("");
+  const [q4, setQ4] = useState("");
 
-  const foo: { [key: string]: { q: string; ans: string } } = {
-    q1: { q: "What is wrong with your plant?", ans: q1 },
-    q2: { q: "How often do you water your plant?", ans: q2 },
+  const handleValueChange = (key: string, value: string) => {
+    setQueries((prevQueries) => ({
+      ...prevQueries,
+      [key]: { ...prevQueries[key], ans: value },
+    }));
   };
 
   return (
@@ -18,12 +28,33 @@ function App() {
       <Wizard>
         <Question
           query="What is wrong with your plant?"
-          onValueChange={setQ1}
+          onValueChange={(value) => {
+            setQ1(value);
+            handleValueChange("q1", value);
+          }}
           isFirst
         />
         <Question
+          query="How big is your plant?"
+          onValueChange={(value) => {
+            setQ2(value);
+            handleValueChange("q2", value);
+          }}
+        />
+        <Question
           query="How often do you water your plant?"
-          onValueChange={setQ2}
+          onValueChange={(value) => {
+            setQ3(value);
+            handleValueChange("q3", value);
+          }}
+        />
+        <Question
+          query="Describe your plant."
+          onValueChange={(value) => {
+            setQ4(value);
+            handleValueChange("q4", value);
+          }}
+          isLast
         />
       </Wizard>
     </>
