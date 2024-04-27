@@ -11,12 +11,14 @@ interface Query {
 }
 
 function App() {
-  const [q1, setQ1] = useState("");
-  const [q2, setQ2] = useState("");
-  const [q3, setQ3] = useState("");
-  const [q4, setQ4] = useState("");
+  const [queries, setQueries] = useState<{ [key: string]: Query }>({
+    q1: { q: "What is wrong with your plant?", ans: "" },
+    q2: { q: "How big is your plant?", ans: "" },
+    q3: { q: "How often do you water your plant?", ans: "" },
+    q4: { q: "Describe your plant.", ans: "" },
+  });
 
-  const handleValueChange = (key: string, value: string) => {
+  const updateQuery = (key: string, value: string) => {
     setQueries((prevQueries) => ({
       ...prevQueries,
       [key]: { ...prevQueries[key], ans: value },
@@ -27,33 +29,21 @@ function App() {
     <>
       <Wizard>
         <Question
-          query="What is wrong with your plant?"
-          onValueChange={(value) => {
-            setQ1(value);
-            handleValueChange("q1", value);
-          }}
+          query={queries.q1.q}
+          onValueChange={(value) => updateQuery("q1", value)}
           isFirst
         />
         <Question
-          query="How big is your plant?"
-          onValueChange={(value) => {
-            setQ2(value);
-            handleValueChange("q2", value);
-          }}
+          query={queries.q2.q}
+          onValueChange={(value) => updateQuery("q2", value)}
         />
         <Question
-          query="How often do you water your plant?"
-          onValueChange={(value) => {
-            setQ3(value);
-            handleValueChange("q3", value);
-          }}
+          query={queries.q3.q}
+          onValueChange={(value) => updateQuery("q3", value)}
         />
         <Question
-          query="Describe your plant."
-          onValueChange={(value) => {
-            setQ4(value);
-            handleValueChange("q4", value);
-          }}
+          query={queries.q4.q}
+          onValueChange={(value) => updateQuery("q4", value)}
           isLast
         />
       </Wizard>

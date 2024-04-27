@@ -6,37 +6,52 @@ type ResultsProps = {
 };
 
 const Results = ({ queries }: ResultsProps) => {
-  const [aiResult, setAiResult] = useState("Loading...");
+  const [aiResults, setAiResults] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
     const makeApiCall = async () => {
       try {
-        const queryText = Object.keys(queries)
-          .map((key) => `${queries[key].q}: ${queries[key].ans}`)
-          .join("\n");
+        const results: { [key: string]: string } = {};
 
-        console.log("Query Text:", queryText); // Log queryText before API call
+        for (const key in queries) {
+          const query = queries[key];
+          const queryText = `${query.q}: ${query.ans}`;
 
-        const res = await fetch("YOUR_API_ENDPOINT", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${API_KEY}`,
-          },
-          body: JSON.stringify({ query: queryText }),
-        });
+          console.log("Query Text:", queryText);
 
-        const json = await res.json();
-        setAiResult(json.textOutputOrSomeOtherPropertyOnThisObject);
+          const res = await fetch("YOUR_API_ENDPOINT", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${API_KEY}`,
+            },
+            body: JSON.stringify({ query: queryText }),
+          });
+
+          const json = await res.json();
+          results[key] = json.textOutputOrSomeOtherPropertyOnThisObject;
+        }
+
+        setAiResults(results);
       } catch (e) {
-        setAiResult("Unable to fetch data");
+        console.error("Error fetching data:", e);
+        setAiResults({});
       }
     };
 
     makeApiCall();
   }, [queries]);
 
-  return aiResult;
+  return (
+    <>
+      {Object.keys(aiResults).map((key) => (
+        <div key={key}>
+          <h3>{queries[key].q}</h3>
+          <p>{aiResults[key]}</p>
+        </div>
+      ))}
+    </>
+  );
 };
 
 export default Results;

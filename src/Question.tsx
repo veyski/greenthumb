@@ -1,28 +1,29 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useWizard } from "react-use-wizard";
-import queries from "./App";
-import makeApiCall from "./Results";
 
 type QuestionProps = {
   query: string;
-  onValueChange: (value: string, isComplete?: boolean) => void;
+  onValueChange: (value: string) => void;
   isFirst?: boolean;
   isLast?: boolean;
 };
 
 const Question = ({ query, onValueChange, isFirst, isLast }: QuestionProps) => {
-  const { handleStep, previousStep, nextStep } = useWizard();
+  const { nextStep, previousStep } = useWizard();
   const [value, setValue] = useState("");
 
   const handleNextStep = () => {
-    nextStep();
+    if (!isLast) {
+      onValueChange(value);
+      nextStep();
+    } else {
+      handleSubmit();
+    }
   };
 
   const handleSubmit = () => {
     onValueChange(value);
-    isLast = true;
     console.log("submitted");
-    makeApiCall(queries);
   };
 
   return (
@@ -43,11 +44,9 @@ const Question = ({ query, onValueChange, isFirst, isLast }: QuestionProps) => {
         />
       </div>
       <div className="button-container">
-        {isFirst ? null : (
-          <button onClick={() => previousStep()}>Previous</button>
-        )}
+        {!isFirst && <button onClick={() => previousStep()}>Previous</button>}
         {isLast ? (
-          <button onClick={handleSubmit}>Submit</button>
+          <button onClick={handleNextStep}>Submit</button>
         ) : (
           <button onClick={handleNextStep}>Next</button>
         )}
