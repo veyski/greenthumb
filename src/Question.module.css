@@ -1,0 +1,19 @@
+.question {
+  text-align: center;
+}
+
+.question input {
+  width: 80%;
+  height: 16px;
+  padding: 8px;
+}
+
+.buttonContainer {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.buttonContainer button {
+  margin: 5px;
+}

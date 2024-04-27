@@ -1,57 +1,44 @@
-import React, { useState } from "react";
 import { useWizard } from "react-use-wizard";
+import styles from "./Question.module.css";
+import { Query } from "./App";
 
 type QuestionProps = {
-  query: string;
+  query: Query;
   onValueChange: (value: string) => void;
-  isFirst?: boolean;
-  isLast?: boolean;
+  onSubmit?: () => void;
 };
 
-const Question = ({ query, onValueChange, isFirst, isLast }: QuestionProps) => {
-  const { nextStep, previousStep } = useWizard();
-  const [value, setValue] = useState("");
-
-  const handleNextStep = () => {
-    if (!isLast) {
-      onValueChange(value);
-      nextStep();
-    } else {
-      handleSubmit();
-    }
-  };
-
-  const handleSubmit = () => {
-    onValueChange(value);
-    console.log("submitted");
-  };
+const Question = ({ query, onValueChange, onSubmit }: QuestionProps) => {
+  const { nextStep, previousStep, isFirstStep, isLastStep } = useWizard();
 
   return (
-    <>
+    <div className={styles.question}>
       <h1>Greenthumb :)</h1>
-      <h2>{query}</h2>
-      <div className="input-container">
+      <h2>{query.q}</h2>
+      <div className={styles.buttonContainer}>
         <input
           type="text"
           className="form-input"
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
+          value={query.ans}
+          onChange={(e) => onValueChange(e.currentTarget.value)}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
-              handleNextStep();
+              nextStep();
             }
           }}
         />
       </div>
-      <div className="button-container">
-        {!isFirst && <button onClick={() => previousStep()}>Previous</button>}
-        {isLast ? (
-          <button onClick={handleNextStep}>Submit</button>
+      <div className={styles.buttonContainer}>
+        {!isFirstStep && (
+          <button onClick={() => previousStep()}>Previous</button>
+        )}
+        {isLastStep ? (
+          <button onClick={onSubmit}>Submit</button>
         ) : (
-          <button onClick={handleNextStep}>Next</button>
+          <button onClick={nextStep}>Next</button>
         )}
       </div>
-    </>
+    </div>
   );
 };
 
