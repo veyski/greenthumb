@@ -2,13 +2,13 @@ import { useWizard } from "react-use-wizard";
 import styles from "./Question.module.css";
 import { Query } from "./App";
 
-type QuestionProps = {
+export type QuestionProps = {
   query: Query;
   onValueChange: (value: string) => void;
   onSubmit?: () => void;
 };
 
-const Question = ({ query, onValueChange, onSubmit }: QuestionProps) => {
+export const Question = ({ query, onValueChange, onSubmit }: QuestionProps) => {
   const { nextStep, previousStep, isFirstStep, isLastStep } = useWizard();
 
   return (
@@ -41,5 +41,3 @@ const Question = ({ query, onValueChange, onSubmit }: QuestionProps) => {
     </div>
   );
 };
-
-export default Question;

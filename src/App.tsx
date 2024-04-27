@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Wizard } from "react-use-wizard";
-import Question from "./Question";
-import Results from "./Results";
+import { Question } from "./Question";
+import { API_KEY } from "../Extras/Env.tsx";
 
 import "./App.css";
 
@@ -12,8 +12,8 @@ export type Query = {
 
 export type Queries = { [key: string]: Query };
 
-const generatePrompt = (queries: Queries): string => {
-  let prompt = `
+const generateuserPrompt = (queries: Queries): string => {
+  let userPrompt = `
     Format all output as JSON with the following properties:
       answer: string
 
@@ -22,10 +22,10 @@ const generatePrompt = (queries: Queries): string => {
 
   `;
   Object.values(queries).forEach((query) => {
-    prompt += `${query.q}: ${query.ans}\n`;
+    userPrompt += `${query.q}: ${query.ans}\n`;
   });
 
-  return prompt;
+  return userPrompt;
 };
 
 export const App = () => {
@@ -43,16 +43,44 @@ export const App = () => {
     }));
   };
 
+  const [results, setResults] = useState("");
+  const makeApiCall = async (userPrompt: string) => {
+    try {
+      const res = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${API_KEY}`,
+        },
+        body: JSON.stringify({
+          model: "gpt-3.5-turbo",
+          max_tokens: 500,
+          temperature: 0.5,
+          messages: [
+            {
+              role: "user",
+              content: userPrompt,
+            },
+          ],
+        }),
+      });
+      const json = await res.json();
+      const answer = json.choices[0].message.content;
+      const parsedAnswer = JSON.parse(answer);
+      const formattedAnswer = parsedAnswer.answer;
+      setResults(formattedAnswer);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  // Avg input -- 200 tokens conservatively
+  // Avg output -- 150 tokens conservatively
+
   const handleSubmit = () => {
-    console.log(queries);
-    const prompt = generatePrompt(queries);
-    console.log(prompt);
-
-    // Do a `fetch` to openai
-    // fetch("http://OPENAI", ...)
-
-    // Story results in useState
-    // setResults()
+    const userPrompt = generateuserPrompt(queries);
+    console.log(userPrompt);
+    makeApiCall(userPrompt);
   };
 
   return (
@@ -60,25 +88,25 @@ export const App = () => {
       <Wizard>
         <Question
           query={queries.q1}
-          onValueChange={(value) => updateQuery("q1", value)}
+          onValueChange={(value: string) => updateQuery("q1", value)}
         />
         <Question
           query={queries.q2}
-          onValueChange={(value) => updateQuery("q2", value)}
+          onValueChange={(value: string) => updateQuery("q2", value)}
         />
         <Question
           query={queries.q3}
-          onValueChange={(value) => updateQuery("q3", value)}
+          onValueChange={(value: string) => updateQuery("q3", value)}
         />
         <Question
           query={queries.q4}
-          onValueChange={(value) => updateQuery("q4", value)}
+          onValueChange={(value: string) => updateQuery("q4", value)}
           onSubmit={handleSubmit}
         />
       </Wizard>
       <div>
         <h2>Results</h2>
-        <textarea value={""} rows={10} cols={50} readOnly />
+        <textarea value={results} rows={10} cols={50} readOnly />
       </div>
     </div>
   );
