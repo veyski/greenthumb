@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Wizard } from "react-use-wizard";
 import { Question } from "./Question";
-import { API_KEY } from "../Extras/Env.tsx";
-
 import "./App.css";
+
+const API_KEY = import.meta.env.API_KEY;
 
 export type Query = {
   q: string;
