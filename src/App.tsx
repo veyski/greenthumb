@@ -3,30 +3,12 @@ import { Wizard } from "react-use-wizard";
 import { Question } from "./Question";
 import "./App.css";
 
-const API_KEY = import.meta.env.API_KEY;
-
 export type Query = {
   q: string;
   ans: string;
 };
 
 export type Queries = { [key: string]: Query };
-
-const generateuserPrompt = (queries: Queries): string => {
-  let userPrompt = `
-    Format all output as JSON with the following properties:
-      answer: string
-
-    Give advice on how to best care for a plant given the following questions and answers. 
-    Don't ask for clarification, just provide an answer to the best of your ability given the following info.
-
-  `;
-  Object.values(queries).forEach((query) => {
-    userPrompt += `${query.q}: ${query.ans}\n`;
-  });
-
-  return userPrompt;
-};
 
 export const App = () => {
   const [queries, setQueries] = useState<Queries>({
@@ -36,6 +18,8 @@ export const App = () => {
     q4: { q: "Describe your plant", ans: "" },
   });
 
+  const [results, setResults] = useState("");
+
   const updateQuery = (key: string, value: string) => {
     setQueries((prevQueries) => ({
       ...prevQueries,
@@ -43,44 +27,22 @@ export const App = () => {
     }));
   };
 
-  const [results, setResults] = useState("");
-  const makeApiCall = async (userPrompt: string) => {
+  const handleSubmit = async () => {
     try {
-      const res = await fetch("https://api.openai.com/v1/chat/completions", {
+      const response = await fetch("http://localhost:3000/makeapicall", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${API_KEY}`,
         },
-        body: JSON.stringify({
-          model: "gpt-3.5-turbo",
-          max_tokens: 500,
-          temperature: 0.5,
-          messages: [
-            {
-              role: "user",
-              content: userPrompt,
-            },
-          ],
-        }),
+        body: JSON.stringify({ queries }),
       });
-      const json = await res.json();
-      const answer = json.choices[0].message.content;
-      const parsedAnswer = JSON.parse(answer);
-      const formattedAnswer = parsedAnswer.answer;
-      setResults(formattedAnswer);
-    } catch (e) {
-      console.error(e);
+      const data = await response.json();
+      console.log(data);
+      setResults(data);
+    } catch (error) {
+      console.error(error);
+      setResults("Unable to make API call");
     }
-  };
-
-  // Avg input -- 200 tokens conservatively
-  // Avg output -- 150 tokens conservatively
-
-  const handleSubmit = () => {
-    const userPrompt = generateuserPrompt(queries);
-    console.log(userPrompt);
-    makeApiCall(userPrompt);
   };
 
   return (
