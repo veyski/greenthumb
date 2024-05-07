@@ -29,13 +29,16 @@ export const App = () => {
 
   const handleSubmit = async () => {
     try {
-      const response = await fetch("http://localhost:3000/makeapicall", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ queries }),
-      });
+      const response = await fetch(
+        "https://gt-server-victor-gheilers-projects.vercel.app/makeapicall",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ queries }),
+        }
+      );
       const data = await response.json();
       const jsonResponse = JSON.parse(data);
       const answer = jsonResponse.answer;
