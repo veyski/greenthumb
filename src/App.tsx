@@ -40,7 +40,7 @@ export const App = () => {
         }
       );
       const data = await response.json();
-      setResults(data.choices[0].message.content);
+      setResults(JSON.parse(data.choices[0].message.content).answer);
     } catch (error) {
       console.error(error);
       setResults("Unable to make API call");
