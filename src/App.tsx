@@ -39,10 +39,8 @@ export const App = () => {
           body: JSON.stringify({ queries }),
         }
       );
-      const data = await response.json();
-      const jsonResponse = JSON.parse(data);
-      const answer = jsonResponse.answer;
-      setResults(answer);
+      const data = await response.text();
+      setResults(data);
     } catch (error) {
       console.error(error);
       setResults("Unable to make API call");
