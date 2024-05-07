@@ -39,8 +39,8 @@ export const App = () => {
           body: JSON.stringify({ queries }),
         }
       );
-      const data = await response.text();
-      setResults(data);
+      const data = await response.json();
+      setResults(data.choices[0].message.content);
     } catch (error) {
       console.error(error);
       setResults("Unable to make API call");
