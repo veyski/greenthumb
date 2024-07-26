@@ -19,6 +19,7 @@ export const App = () => {
   });
 
   const [results, setResults] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const updateQuery = (key: string, value: string) => {
     setQueries((prevQueries) => ({
@@ -28,6 +29,7 @@ export const App = () => {
   };
 
   const handleSubmit = async () => {
+    setLoading(true);
     try {
       const response = await fetch(
         "https://gt-server-victor-gheilers-projects.vercel.app/makeapicall",
@@ -40,9 +42,11 @@ export const App = () => {
         }
       );
       const data = await response.json();
+      setLoading(false);
       setResults(JSON.parse(data.choices[0].message.content).answer);
     } catch (error) {
       console.error(error);
+      setLoading(false);
       setResults("Unable to make API call");
     }
   };
@@ -70,7 +74,12 @@ export const App = () => {
       </Wizard>
       <div>
         <h2>Results</h2>
-        <textarea value={results} rows={10} cols={50} readOnly />
+        <textarea
+          value={loading ? "Loading..." : results}
+          rows={10}
+          cols={50}
+          readOnly
+        />
       </div>
     </div>
   );
