@@ -11,6 +11,16 @@ export type QuestionProps = {
 export const Question = ({ query, onValueChange, onSubmit }: QuestionProps) => {
   const { nextStep, previousStep, isFirstStep, isLastStep } = useWizard();
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      if (!isLastStep) {
+        nextStep();
+      } else if (onSubmit) {
+        onSubmit();
+      }
+    }
+  };
+
   return (
     <div className={styles.question}>
       <h1>Greenthumb :)</h1>
@@ -21,11 +31,7 @@ export const Question = ({ query, onValueChange, onSubmit }: QuestionProps) => {
           className="form-input"
           value={query.ans}
           onChange={(e) => onValueChange(e.currentTarget.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              nextStep();
-            }
-          }}
+          onKeyDown={handleKeyDown}
         />
       </div>
       <div className={styles.buttonContainer}>
